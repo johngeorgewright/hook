@@ -1,6 +1,6 @@
 import type { EventEmitter } from 'events'
-import Hook from './Hook'
-import HookName from './HookName'
+import type Hook from './Hook'
+import type HookName from './HookName'
 
 export default function runner<Hooks extends Record<HookName, Hook>>(
   emitter: EventEmitter,
@@ -10,20 +10,25 @@ export default function runner<Hooks extends Record<HookName, Hook>>(
   let queued = false
   let running = false
 
-  return () => {
+  return run
+
+  function run() {
     if (!running) {
-      run()
+      running = true
+      exec()
+      running = false
     } else if (!queued) {
       queued = true
-      emitter.once('finished', run)
     }
   }
 
-  function run() {
-    running = true
-    queued = false
+  function exec() {
     fn(hooks)
-    running = false
     emitter.emit('finished')
+
+    if (queued) {
+      queued = false
+      exec()
+    }
   }
 }

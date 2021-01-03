@@ -1,4 +1,4 @@
-import HookCreator from './HookCreator'
+import type HookCreator from './HookCreator'
 
 const memoHook: HookCreator<MemoHook> = (useState) => (fn, deps) => {
   const [dependencies, setDependencies] = useState(deps)

@@ -29,6 +29,10 @@ export default function stateHook(emitter: EventEmitter): StateHook {
 
   function stateSetter<T>(index: number) {
     return (value: T) => {
+      if (states.get(index) === value) {
+        return
+      }
+
       states.set(index, value)
       emitter.emit('run')
     }
